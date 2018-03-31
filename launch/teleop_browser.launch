@@ -1,0 +1,11 @@
+<launch>
+  <!-- change this next line to include the launch file for your robot's hardware drivers: -->
+  <node pkg="rosgopigo3" type="rosgopigo3_motors.py" name="rosgopigo3_motors"
+      output="screen">
+    <rosparam>
+      rate: 30
+    </rosparam>
+  </node>
+  <include file="$(find differential_drive)/launch/differential_drive.launch" />
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+</launch>

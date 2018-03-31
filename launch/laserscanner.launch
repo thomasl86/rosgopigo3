@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="tf" type="static_transform_publisher"
+      name="laser_frame_broadcaster"
+      args="0.09 0.0 0.0 0.0 0.0 0.0 /base_link /base_laser 100" />
+  <node pkg="rosgopigo3" type="rosgopigo3_laserscanner.py"
+      name="rosgopigo3_laserscanner">
+    <rosparam param="rate">0.1389</rosparam>
+  </node>
+</launch>

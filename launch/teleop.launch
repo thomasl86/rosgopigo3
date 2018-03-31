@@ -1,0 +1,11 @@
+<launch>
+  <node pkg="rosgopigo3" type="rosgopigo3_motors.py" name="rosgopigo3_motors"
+        output="screen">
+      <rosparam param="rate">30</rosparam>
+  </node>
+  <include
+      file="$(find differential_drive)/launch/differential_drive_yaml.launch">
+  </include>
+  <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"
+      name="teleop_keyboard" output="screen"/>
+</launch>
