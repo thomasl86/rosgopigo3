@@ -1,16 +1,20 @@
 <launch>
   <node pkg="tf" type="static_transform_publisher"
         name="laser_frame_broadcaster"
-        args="0.09 0.0 0.0 0.0 0.0 0.0 /base_link /base_laser 100" />
+        args="0.09 0.0 0.0 0.0 0.0 0.0 /base_link /base_laser 100"
+        output="screen"/>
   <node pkg="rosgopigo3" type="rosgopigo3_servo.py" name="rosgopigo3_servo">
     <rosparam>
-      rate: 30
+      rate: 20
     </rosparam>
   </node>
   <node pkg="rosgopigo3" type="rosgopigo3_laserscanner.py"
-        name="rosgopigo3_laserscanner">
+        name="rosgopigo3_laserscanner" output="screen">
     <rosparam>
-      rate: 0.1389
+      rate: 20
+      dt_sweep: 1
+      do_sweep: true
+      angle_sweep: 180.0
     </rosparam>
   </node>
 </launch>

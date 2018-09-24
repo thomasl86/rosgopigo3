@@ -3,9 +3,9 @@
   <node pkg="rosgopigo3" type="rosgopigo3_motors.py" name="rosgopigo3_motors"
       output="screen">
     <rosparam>
-      rate: 30
+      rate: 20
     </rosparam>
   </node>
-  <include file="$(find differential_drive)/launch/differential_drive.launch" />
+  <include file="$(find differential_drive)/launch/differential_drive_yaml.launch" />
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
 </launch>

@@ -6,8 +6,7 @@ import gopigo3
 import time
 # ROS imports
 import rospy
-# TODO Int16 import is now obsolete (I think)
-from std_msgs.msg import Int16
+from std_msgs.msg import Float64
 from sensor_msgs.msg import LaserScan
 
 # Instantiate GoPiGo object
@@ -15,65 +14,92 @@ objGpg = gopigo3.GoPiGo3()
 # Instantiate DistanceSensor object
 objDstSns = distance_sensor.DistanceSensor()
 
+
 def rosgopigo3_laserscanner():
+
     pubScan = rospy.Publisher('laserscan', LaserScan, queue_size=1)
-    pubServoPos = rospy.Publisher('/servo/cmd_pos', Int16, queue_size=1)
+    pubServoPos = rospy.Publisher('servo/cmd_pos', Float64, queue_size=1)
     rospy.init_node('rosgopigo3_laserscanner', anonymous=True)
-    # FIXME Rate in [Hz] is really awkward. Change to sweep duration
-    #       or just let servo always go at max speed.
-    rate_hz = float(rospy.get_param('~rate', 0.1389))
+
+    dtSweep = float(rospy.get_param('~dt_sweep', 7.2))
+    rate_hz = float(rospy.get_param('~rate', 20))
+    doSweep = rospy.get_param('~do_sweep', bool(1))
+    angleSweep = rospy.get_param('~angle_sweep', 180.0)
     rospy.loginfo("rate_hz = %s", rate_hz)
-    stepSweep = round((0.04*1800)/(1/rate_hz))
+    amntSteps = rate_hz*dtSweep
+    dtStep = dtSweep/amntSteps
+    rospy.loginfo("dtStep = %s", dtStep)
+    dtSleep = rospy.Duration(dtStep)
+    rateStep = rospy.Rate(1/dtStep)
+    rospy.loginfo("rateStep = %f", 1/dtStep)
+
+    stepSweep = float(angleSweep)/amntSteps
 
     objRate = rospy.Rate(rate_hz)
 
     # Variables
-    # Maximum count to the left
-    countMax = 2420
-    # Minimum count to the right
-    countMin = 620
-    stepSweep = 10
     sweepDir = 1
+    pi = 3.14159
+    toRad = pi/180.0
+    toDeg = 180.0/pi
+
+    time_pre = rospy.Time.now()
 
     while not rospy.is_shutdown():
-        rospy.loginfo("stepSweep = %s", stepSweep)
-        rospy.loginfo("rate_hz = %s", rate_hz)
 
         # --- Obtain a scan
         # --- Populate the LaserScan message
-        numReadings = (countMax - countMin) / abs(stepSweep)
+        numReadings = angleSweep / abs(stepSweep)
         now = rospy.get_rostime()
         msgScan = LaserScan()
         msgScan.header.stamp = now
         msgScan.header.frame_id = 'base_laser'
         msgScan.range_min = 0.010
         msgScan.range_max = 2
-        msgScan.time_increment = 0.04
-        msgScan.angle_increment = (3.14 / numReadings) * sweepDir
-        msgScan.angle_min = 1.57 * sweepDir * -1
-        msgScan.angle_max = 1.57 * sweepDir
         msgScan.ranges = []
         msgScan.intensities = []
-        msgScan.ranges = []
-        # --- Start and end index based on direction of sweep
-        if sweepDir > 0:
-            rangeStart = countMin
-            rangeEnd = countMax
-        elif sweepDir < 0:
-            rangeStart = countMax
-            rangeEnd = countMin
+        if doSweep:
+            msgScan.time_increment = dtStep
+            msgScan.angle_increment = ((angleSweep*toRad) / numReadings) * sweepDir
+            msgScan.angle_min = (angleSweep*toRad)/2 * sweepDir * -1
+            msgScan.angle_max = (angleSweep*toRad)/2 * sweepDir
+            # --- Start and end index based on direction of sweep
+            if sweepDir > 0:
+                angleStart = -float(angleSweep)/2
+                ii = range(1, int(amntSteps) + 1, 1)
+            elif sweepDir < 0:
+                angleStart = float(angleSweep)/2
+                ii = range(int(amntSteps) + 1, 1, -1)
 
-        # Carry out the sweep
-        for i in range(rangeStart, rangeEnd, stepSweep * sweepDir):
-            #objGpg.set_servo(objGpg.SERVO_1, i)
-            pubServoPos.publish(i)
-            msgScan.ranges.append(objDstSns.read_range_single() / 1000.0)
+            # Carry out the sweep
+            angle = angleStart
+            for i in ii:
+                tic = rospy.Time.now()
+                if rospy.is_shutdown():
+                    break
+                angle = angle + stepSweep*sweepDir
+                pubServoPos.publish(angle)
 
-        # Invert sign of sweepDir to signal sweep direction change
-        sweepDir = sweepDir * -1
+                msgScan.ranges.append(objDstSns.read_range_single() / 1000.0)
+
+                rateStep.sleep()
+
+            # Invert sign of sweepDir to signal sweep direction change
+            sweepDir = sweepDir * -1
+        else:
+            msgScan.time_increment = dtStep
+            msgScan.angle_increment = 0.2
+            msgScan.angle_min = -0.1
+            msgScan.angle_max = 0.1
+
+            dist = objDstSns.read_range_single() / 1000.0
+            msgScan.ranges.append(dist)
+            msgScan.ranges.append(dist)
+
+            rateStep.sleep()
+
         # Publish the scan data
         pubScan.publish(msgScan)
-        objRate.sleep()
 
     objGpg.reset_all()
 
