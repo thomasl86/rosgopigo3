@@ -3,7 +3,7 @@
   <name>rosgopigo3</name>
   <version>0.1.0</version>
   <description>
-    A package for interfacing and controlling the GoPiGo3 differential drive
+    A ROS package for interfacing and controlling the GoPiGo3 differential drive
     robot.
   </description>
 
