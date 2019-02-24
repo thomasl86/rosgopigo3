@@ -1,6 +1,6 @@
 <launch>
-  <node pkg="rosgopigo3" type="rosgopigo3_servo.py"
-        name="rosgopigo3_servo">
+  <node pkg="rosgopigo3" type="servo.py"
+        name="servo">
     <rosparam>
       rate: 20
     </rosparam>

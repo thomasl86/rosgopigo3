@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="rosgopigo3" type="rosgopigo3_motors.py" name="rosgopigo3_motors"
+  <node pkg="rosgopigo3" type="motors.py" name="motors"
         output="screen">
       <rosparam param="rate">30</rosparam>
   </node>

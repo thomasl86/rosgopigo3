@@ -41,8 +41,8 @@ def callbackCmdPos(msg):
     setPosition(msg.data)
 
 
-def rosgopigo3_servo():
-    rospy.init_node('rosgopigo3_servo', anonymous=True)
+def servo():
+    rospy.init_node('servo', anonymous=True)
     rospy.Subscriber('servo/cmd_pos', Float64, callbackCmdPos)
     #pubPos = rospy.publisher('servo/pos', Int16, queue_size=1)
     srvSetPos = rospy.Service('servo/set_pos', ServoPos, srvCallbackSetPosition)
@@ -61,7 +61,7 @@ def rosgopigo3_servo():
 
 if __name__ == '__main__':
     try:
-        rosgopigo3_servo()
+        servo()
     except rospy.ROSInterruptException:
         gObjGpg.reset_all()
         pass

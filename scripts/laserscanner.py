@@ -15,11 +15,11 @@ objGpg = gopigo3.GoPiGo3()
 objDstSns = distance_sensor.DistanceSensor()
 
 
-def rosgopigo3_laserscanner():
+def laserscanner():
 
     pubScan = rospy.Publisher('laserscan', LaserScan, queue_size=1)
     pubServoPos = rospy.Publisher('servo/cmd_pos', Float64, queue_size=1)
-    rospy.init_node('rosgopigo3_laserscanner', anonymous=True)
+    rospy.init_node('laserscanner', anonymous=True)
 
     dtSweep = float(rospy.get_param('~dt_sweep', 7.2))
     rate_hz = float(rospy.get_param('~rate', 20))
@@ -106,7 +106,7 @@ def rosgopigo3_laserscanner():
 
 if __name__ == '__main__':
     try:
-        rosgopigo3_laserscanner()
+        laserscanner()
     except rospy.ROSInterruptException:
         objGpg.reset_all()
         pass

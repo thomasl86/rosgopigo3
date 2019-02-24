@@ -21,12 +21,12 @@ def callbackRMotor(msg):
     objGpg.set_motor_power(objGpg.MOTOR_RIGHT, dataRmotor)
 
 
-def rosgopigo3_motors():
+def motors():
     pubEncLeft = rospy.Publisher('lwheel', Int16, queue_size=1)
     pubEncRight = rospy.Publisher('rwheel', Int16, queue_size=1)
     rospy.Subscriber('lmotor_cmd', Float32, callbackLMotor)
     rospy.Subscriber('rmotor_cmd', Float32, callbackRMotor)
-    rospy.init_node('rosgopigo3_motors', anonymous=True)
+    rospy.init_node('motors', anonymous=True)
     rate_hz = rospy.get_param("rate", 30)
     objRate = rospy.Rate(rate_hz)  # 10hz
     # Get the encoder offset?
@@ -55,7 +55,7 @@ def rosgopigo3_motors():
 
 if __name__ == '__main__':
     try:
-        rosgopigo3_motors()
+        motors()
     except rospy.ROSInterruptException:
         objGpg.reset_all()
         pass

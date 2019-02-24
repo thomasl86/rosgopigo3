@@ -1,6 +1,6 @@
 <launch>
   <!-- change this next line to include the launch file for your robot's hardware drivers: -->
-  <node pkg="rosgopigo3" type="rosgopigo3_motors.py" name="rosgopigo3_motors"
+  <node pkg="rosgopigo3" type="motors.py" name="motors"
       output="screen">
     <rosparam>
       rate: 20
