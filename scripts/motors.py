@@ -4,7 +4,7 @@
 import gopigo3
 # ROS imports
 import rospy
-from std_msgs.msg import Int16
+from std_msgs.msg import Int64
 from std_msgs.msg import Float32
 
 # Instantiate GoPiGo3 object
@@ -22,8 +22,8 @@ def callbackRMotor(msg):
 
 
 def motors():
-    pubEncLeft = rospy.Publisher('lwheel', Int16, queue_size=1)
-    pubEncRight = rospy.Publisher('rwheel', Int16, queue_size=1)
+    pubEncLeft = rospy.Publisher('lwheel', Int64, queue_size=1)
+    pubEncRight = rospy.Publisher('rwheel', Int64, queue_size=1)
     rospy.Subscriber('lmotor_cmd', Float32, callbackLMotor)
     rospy.Subscriber('rmotor_cmd', Float32, callbackRMotor)
     rospy.init_node('motors', anonymous=True)

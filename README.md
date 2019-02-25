@@ -13,8 +13,8 @@ A ROS package for interfacing and controlling the [GoPiGo3](https://www.dexterin
       Sampling rate
 - `motors`:
   - Published topics:  
-    - `lwheel` (std_msgs/Int16): The left wheel encoder count
-    - `rwheel` (std_msgs/Int16): The the right wheel encoder count
+    - `lwheel` (std_msgs/Int64): The left wheel encoder count
+    - `rwheel` (std_msgs/Int64): The the right wheel encoder count
   - Subscribed topics:  
     - `lmotor_cmd` (std_msgs/Float32): The commanded power going to the left wheel's motor (received from `differential_drive/pid_velocity`)
     - `rmotor_cmd` (std_msgs/Float32): The commanded power going to the right wheel's motor (received from `differential_drive/pid_velocity`)
